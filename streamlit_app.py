@@ -26,6 +26,5 @@ if st.button("Generate Audio"):
         if user_prompt and duration:
             st.text("Generating audio...")
             response = query({"inputs": {"prompt":user_prompt,"duration":int(duration)}})
-            st.text(response)
-            audio = response.generated_audio
-            st.audio(audio, format="audio/mp3", sample_rate=response.sample_rate)
+            audio = response[0]['generated_audio']
+            st.audio(audio, format="audio/mp3", sample_rate=response[0]['sample_rate'])
