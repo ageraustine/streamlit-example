@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-
+import numpy as np
 API_URL = "https://j7q348ccukmo1z0o.us-east-1.aws.endpoints.huggingface.cloud"
 
 headers = {
@@ -26,6 +26,6 @@ if st.button("Generate Audio"):
         if user_prompt and duration:
             st.text("Generating audio...")
             response = query({"inputs": {"prompt":user_prompt,"duration":int(duration)}})
-            audio = response[0]['generated_audio']
+            audio = np.array(response[0]['generated_audio'])
             sample_rate = response[0]['sample_rate']
             st.audio(audio, format="audio/mp3", sample_rate=sample_rate)
