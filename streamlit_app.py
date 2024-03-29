@@ -3,8 +3,6 @@ import requests
 import numpy as np
 import os
 from pydub import AudioSegment
-import soundfile as sf
-from endpoint import query
 
 # Try to get API_URL from environment variables, if not found set to a default value
 try:
@@ -26,33 +24,14 @@ headers = {
 }
 
 # Streamlit app title
-st.title("Songlabai")
+st.title("Komposer")
 
 genres = [
-    "Pop",
-    "Rock",
-    "Hip Hop",
-    "Jazz",
-    "Blues",
-    "Country",
-    "Classical",
-    "Electronic",
-    "Reggae",
-    "Folk",
-    "R&B",
-    "Metal",
-    "Punk",
-    "Indie",
-    "Dance",
-    "World",
-    "Gospel",
-    "Soul",
-    "Funk",
-    "Ambient",
-    "Techno",
-    "Disco",
-    "House",
-    "Trance",
+    "Pop", "Rock", "Hip Hop", "Jazz", "Blues",
+    "Country", "Classical", "Electronic", "Reggae",
+    "Folk", "R&B", "Metal", "Punk", "Indie",
+    "Dance", "World", "Gospel", "Soul", "Funk",
+    "Ambient", "Techno", "Disco", "House", "Trance",
     "Dubstep"
 ]
 
@@ -71,30 +50,28 @@ if st.button("Generate Audio"):
     prompt = f"{genre}, Energy: {energy_level}, Description: {description}"
     
     st.text("Generating audio...")
-    response = query({"inputs": {"prompt": prompt, "duration": duration}}, headers)
-    audio = np.array(response[0]['generated_audio'], dtype=np.float32)
-    sample_rate = response[0]['sample_rate']
+    response = requests.post(API_URL, headers=headers, json={"inputs": {"prompt": prompt, "duration": duration}})
+    audio = np.array(response.json()[0]['generated_audio'], dtype=np.float32)
+    sample_rate = response.json()[0]['sample_rate']
     st.audio(audio, format="audio/wav", sample_rate=sample_rate, start_time=0)
 
-    # Allow for further processing
-    if st.button("Apply Post-processing"):
+    # Post-processing options
+    st.sidebar.title("Post-processing Options")
+
+    apply_stereo = st.sidebar.checkbox("Apply Stereo Effect")
+    reverse = st.sidebar.checkbox("Reverse Audio")
+    change_speed = st.sidebar.checkbox("Change Speed")
+
+    if change_speed:
+        speed_factor = st.sidebar.slider("Speed Factor:", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
+
+    # Apply selected post-processing
+    if apply_stereo or reverse or change_speed:
         st.text("Applying post-processing...")
         
         # Convert audio to pydub AudioSegment
         audio_segment = AudioSegment(audio.tobytes(), frame_rate=sample_rate, sample_width=audio.itemsize, channels=1)
         
-        # Placeholder for post-processing options
-        post_process_placeholder = st.empty()
-        
-        # Display post-processing options
-        with post_process_placeholder:
-            apply_stereo = st.checkbox("Apply Stereo Effect")
-            reverse = st.checkbox("Reverse Audio")
-            change_speed = st.checkbox("Change Speed")
-            
-            if change_speed:
-                speed_factor = st.slider("Speed Factor:", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
-            
         # Apply selected post-processing
         if apply_stereo:
             audio_segment = audio_segment.pan(-0.5).overlay(audio_segment.pan(0.5))
@@ -105,8 +82,5 @@ if st.button("Generate Audio"):
         if change_speed:
             audio_segment = audio_segment.speedup(playback_speed=speed_factor)
         
-        # Save the processed audio
-        output_path = "processed_audio.wav"
-        audio_segment.export(output_path, format="wav")
-
-        st.audio(output_path, format="audio/wav")
+        # Play the processed audio
+        st.audio(audio_segment.raw_data, format="audio/wav", start_time=0)
