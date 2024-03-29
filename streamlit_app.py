@@ -24,7 +24,7 @@ headers = {
 }
 
 # Streamlit app title
-st.title("Komposer")
+st.title("Songlabai")
 
 genres = [
     "Pop", "Rock", "Hip Hop", "Jazz", "Blues",
