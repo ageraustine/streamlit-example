@@ -10,8 +10,15 @@ except KeyError:
     st.error("API_URL environment variable is not set.")
     st.stop()
 
+# Try to get the Bearer token from environment variables, if not found set to a default value
+try:
+    BEARER_TOKEN = os.environ["BEARER_TOKEN"]
+except KeyError:
+    st.error("BEARER_TOKEN environment variable is not set.")
+    st.stop()
+
 headers = {
-    "Authorization": "Bearer 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",
+    "Authorization": f"Bearer {BEARER_TOKEN}",
     "Content-Type": "application/json"
 }
 
