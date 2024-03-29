@@ -49,7 +49,8 @@ genres = [
     "Trance",
     "Dubstep"
 ]
-
+# Streamlit app
+st.title("Komposer")
 genre = st.selectbox("Select Genre:", genres)
 
 energy_levels = ["Low", "Medium", "High"]
@@ -57,8 +58,6 @@ energy_level = st.radio("Energy Level:", energy_levels)
 
 description = st.text_input("Description:", "")
 
-# Streamlit app
-st.title("Songlabai")
 
 # Generate audio based on the user's prompt
 if st.button("Generate Audio"):
