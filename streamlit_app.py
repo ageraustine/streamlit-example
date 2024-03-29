@@ -22,24 +22,51 @@ headers = {
     "Content-Type": "application/json"
 }
 
-def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+genres = [
+    "Pop",
+    "Rock",
+    "Hip Hop",
+    "Jazz",
+    "Blues",
+    "Country",
+    "Classical",
+    "Electronic",
+    "Reggae",
+    "Folk",
+    "R&B",
+    "Metal",
+    "Punk",
+    "Indie",
+    "Dance",
+    "World",
+    "Gospel",
+    "Soul",
+    "Funk",
+    "Ambient",
+    "Techno",
+    "Disco",
+    "House",
+    "Trance",
+    "Dubstep"
+]
+
+genre = st.selectbox("Select Genre:", genres)
+
+energy_levels = ["Low", "Medium", "High"]
+energy_level = st.radio("Energy Level:", energy_levels)
+
+description = st.text_input("Description:", "")
 
 # Streamlit app
 st.title("Songlabai")
 
-# Input prompt from the user
-user_prompt = st.text_input("Enter your prompt:", "")
-
-# Input form
-duration = st.number_input("Duration (in seconds)", min_value=10)
-
 # Generate audio based on the user's prompt
 if st.button("Generate Audio"):
-    if user_prompt and duration:
-        st.text("Generating audio...")
-        response = query({"inputs": {"prompt": user_prompt, "duration": int(duration)}})
-        audio = np.array(response[0]['generated_audio'], dtype=np.float32)
-        sample_rate = response[0]['sample_rate']
-        st.audio(audio, format="audio/wav", sample_rate=sample_rate)
+    prompt = f"{genre}, Energy: {energy_level}, Description: {description}"
+    duration = st.slider("Duration (in seconds):", min_value=10, max_value=300, value=60, step=1)
+    
+    st.text("Generating audio...")
+    response = query({"inputs": {"prompt": prompt, "duration": duration}})
+    audio = np.array(response[0]['generated_audio'], dtype=np.float32)
+    sample_rate = response[0]['sample_rate']
+    st.audio(audio, format="audio/wav", sample_rate=sample_rate)
