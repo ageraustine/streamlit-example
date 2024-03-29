@@ -4,6 +4,7 @@ import numpy as np
 import os
 from pydub import AudioSegment
 import soundfile as sf
+from endpoint import query
 
 # Try to get API_URL from environment variables, if not found set to a default value
 try:
@@ -70,7 +71,7 @@ if st.button("Generate Audio"):
     prompt = f"{genre}, Energy: {energy_level}, Description: {description}"
     
     st.text("Generating audio...")
-    response = query({"inputs": {"prompt": prompt, "duration": duration}})
+    response = query({"inputs": {"prompt": prompt, "duration": duration}}, headers)
     audio = np.array(response[0]['generated_audio'], dtype=np.float32)
     sample_rate = response[0]['sample_rate']
     st.audio(audio, format="audio/wav", sample_rate=sample_rate, start_time=0)
