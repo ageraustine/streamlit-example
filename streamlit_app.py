@@ -43,7 +43,7 @@ energy_level = st.radio("Energy Level:", energy_levels)
 description = st.text_input("Description:", "")
 
 # Duration input
-duration = st.slider("Duration (in seconds):", min_value=10, max_value=300, value=60, step=1)
+duration = st.slider("Duration (in seconds):", min_value=15, max_value=90, value=30, step=1)
 
 # Generate audio based on the user's prompt
 if st.button("Generate Audio"):
